@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Lint
+        run: ruff check src analysis paper experiments tests
+
+      - name: Unit tests + claim regeneration (tests/test_claims.py)
+        run: PYTHONPATH=src pytest -q
+
+      - name: make figures (Stage 2 smoke test, no dataset needed)
+        run: |
+          PYTHONPATH=src python analysis/covariance_check.py
+          PYTHONPATH=src python analysis/repeatability_stratified.py
+          PYTHONPATH=src python analysis/design_participant_bootstrap.py
+          PYTHONPATH=src python analysis/figure1b.py
+          PYTHONPATH=src python analysis/make_macros.py
+          PYTHONPATH=src python paper/make_figures.py
+
+      - name: Upload regenerated figure
+        uses: actions/upload-artifact@v4
+        with:
+          name: figures
+          path: figures/

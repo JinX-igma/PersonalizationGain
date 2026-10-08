@@ -1,0 +1,153 @@
+# Every numerical claim in the paper's abstract and headline results, mapped
+# to the generated macro that reproduces it and the script chain that
+# produces that macro. `tests/test_claims.py` regenerates `results/
+# generated_macros.json` from the committed Stage 1 cache in `results/` and
+# checks every entry below against it -- CI fails if a claim and the code
+# that supposedly backs it ever disagree.
+#
+# This is not every macro in the camera-ready control_sequence.tex (there
+# are ~70, many per-fold breakdowns); it is the claims stated in the
+# abstract plus their immediate supporting numbers. Extending this file
+# follows the same pattern: add the macro to analysis/make_macros.py first,
+# then add its expected value here.
+
+claims:
+  - id: episode-repeatability-sigma
+    description: >
+      Episode repeatability is sigma = .120 in accuracy units, pooled over
+      the 66 user-activity cells where at least one of the two episodes
+      shows nonzero gain.
+    paper_location: "Abstract; Section 3, 'Measuring repeatability'"
+    macro: SigmaPooled
+    expected: 0.120
+    tolerance: 0.0005
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: episode-repeatability-sigma-ci
+    description: "95% participant-cluster bootstrap CI for the pooled sigma above."
+    paper_location: "Section 3"
+    macro: SigmaPooledCI
+    expected: [0.084, 0.153]
+    tolerance: 0.001
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+    notes: "Bootstrap seed=0, n_boot=5000; see repgain.bootstrap.participant_bootstrap."
+
+  - id: median-activity-level-gain
+    description: "Median activity-level gain magnitude is .065."
+    paper_location: Abstract
+    macro: MedEffect
+    expected: 0.065
+    tolerance: 0.0005
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: sign-flip-rate
+    description: >
+      Positive-gain status changes between two episodes of the same user and
+      activity in 23% of eligible user-activity cells (15/66).
+    paper_location: Abstract
+    macro: SignFlipPct
+    expected: 23
+    tolerance: 0.5
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: direct-three-activity-scale
+    description: >
+      Even after averaging three activities, the repeatability scale across
+      activity-specific adapters is .063 (assumption-free, measured directly
+      rather than propagated under an independence assumption).
+    paper_location: "Abstract; Section 4"
+    macro: DirectSdThree
+    expected: 0.063
+    tolerance: 0.0005
+    produced_by:
+      - analysis/covariance_check.py
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: direct-three-activity-scale-ci
+    description: "95% participant-cluster bootstrap CI for DirectSdThree."
+    paper_location: "Section 4"
+    macro: DirectSdThreeCI
+    expected: [0.046, 0.079]
+    tolerance: 0.001
+    produced_by:
+      - analysis/covariance_check.py
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: six-activity-reference-scales
+    description: >
+      Reference half-widths for a six-activity, one-episode-per-activity
+      user gain: .087 (assuming two uncorrelated three-activity blocks) and
+      .124 (no further-averaging benefit), derived from DirectSdThree.
+    paper_location: Abstract
+    macro: [BracketLo, BracketHi]
+    expected: [0.087, 0.124]
+    tolerance: 0.0005
+    produced_by:
+      - analysis/covariance_check.py
+      - analysis/make_macros.py
+    source_cache: results/episode_transport.csv
+
+  - id: admissible-outcome-designs
+    description: >
+      216 admissible outcome designs exist (3 activities x 3 trial choices,
+      3 activities x 2 trial choices = 3^3 * 2^3), and the cohort mean gain
+      is positive under all of them in both folds (0% show a negative fold
+      mean).
+    paper_location: Abstract
+    macro: [NDesigns, FracNegDesigns]
+    expected: [216, 0]
+    tolerance: [0, 0.5]
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: results/episode_split_enumeration.csv
+    notes: >
+      episode_split_enumeration.csv is itself produced by
+      experiments/enumerate_future_episode_splits.py (Stage 1, needs the raw
+      MotionSense feature cache); it is committed here as a frozen input.
+
+  - id: per-user-gain-counts
+    description: "24 participants; 16 have a positive shipped-design gain, 5 negative."
+    paper_location: "Section 4 / Figure 1(b)"
+    macro: [NUsersV, NPos, NNeg]
+    expected: [24, 16, 5]
+    tolerance: [0, 0, 0]
+    produced_by:
+      - analysis/figure1b.py
+      - analysis/make_macros.py
+    source_cache: [results/episode_split_enumeration.csv, results/episode_split_peruser.csv]
+
+  - id: per-user-gain-central-tendency
+    description: "Median shipped-design per-user gain +.022; cohort mean +.045."
+    paper_location: "Section 4 / Figure 1(b)"
+    macro: [MedGain, FleetMean]
+    expected: [0.022, 0.045]
+    tolerance: 0.0005
+    produced_by:
+      - analysis/figure1b.py
+      - analysis/make_macros.py
+    source_cache: [results/episode_split_enumeration.csv, results/episode_split_peruser.csv]
+
+  - id: feature-count
+    description: "141 deterministic time-domain features per window."
+    paper_location: "Section 3, 'Data'"
+    macro: NFeat
+    expected: 141
+    tolerance: 0
+    produced_by:
+      - analysis/make_macros.py
+    source_cache: null
+    notes: >
+      Hardcoded; the true source is experiments/extract_and_fit.py's
+      feature_names(), asserted to have length 141 wherever the window
+      feature cache is (re)built (needs the raw dataset, so not re-asserted
+      in Stage 2).

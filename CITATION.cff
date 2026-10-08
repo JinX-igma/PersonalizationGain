@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this code or diagnostic, please cite the paper below."
+title: "repgain: episode-repeatability diagnostics for personalization gains"
+type: software
+license: MIT
+authors:
+  - family-names: Xu
+    given-names: Jingcheng
+    affiliation: "School of Information Technology, Deakin University"
+  - family-names: Lee
+    given-names: Kevin
+    affiliation: "School of Information Technology, Deakin University"
+  - family-names: Dias
+    given-names: Imali
+    affiliation: "School of Information Technology, Deakin University"
+  - family-names: Ranaweera
+    given-names: Chathurika
+    affiliation: "School of Information Technology, Deakin University"
+  - family-names: Sinha
+    given-names: Roopak
+    affiliation: "School of Information Technology, Deakin University"
+preferred-citation:
+  type: conference-paper
+  title: "How Precise Is a Personalization Gain? Episode Repeatability in Wearable Activity Recognition"
+  authors:
+    - family-names: Xu
+      given-names: Jingcheng
+    - family-names: Lee
+      given-names: Kevin
+    - family-names: Dias
+      given-names: Imali
+    - family-names: Ranaweera
+      given-names: Chathurika
+    - family-names: Sinha
+      given-names: Roopak
+  year: 2026
+  conference:
+    name: "NeurIPS 2026 Workshop on Continual Learning in the Era of Foundation Models and Embodied Agents (CL4MAgents)"
