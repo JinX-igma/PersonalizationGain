@@ -1,16 +1,28 @@
-# repgain
+# PersonalizationGain
 
 **How much does a personalization gain move if you measure it on a different
-episode?** This package answers that question and reproduces the results of
+episode?** This repo answers that question and reproduces the results of
 *How Precise Is a Personalization Gain? Episode Repeatability in Wearable
-Activity Recognition* (NeurIPS 2026 workshop, CL4MAgents).
+Activity Recognition* (NeurIPS 2026 workshop, CL4MAgents). The installable
+package is `repgain`.
 
 Cohort-average personalization gains are routinely reported as evidence that
 a per-user adapter works. They can be positive on average while being
 individually unrepeatable: score the same fixed adapter on a second episode
 of the same user and activity, and a meaningful fraction of per-user
-conclusions flip. `repgain` is the diagnostic that catches this, packaged so
-any personalization study can run it on its own results:
+conclusions flip.
+
+![Episode variation vs. gain magnitude, and per-user gains against episode-repeatability reference scales](assets/repeatability.png)
+
+*(a) The spread between two measurements of the same (user, activity) gain
+(orange, top row) is comparable in size to the gain itself (orange, bottom
+row) -- a cohort-level effect does not imply a stable per-user number. (b)
+Most per-user gains (blue) fall inside the measurement's own noise band
+(dashed/dotted reference scales), even though the cohort mean is positive.
+Regenerate with `make figures`.*
+
+`repgain` is the diagnostic that catches this, packaged so any
+personalization study can run it on its own results:
 
 ```python
 from repgain import RepeatabilityCheck
@@ -38,6 +50,9 @@ difference is the *episode repeatability* reported in the paper:
 ## Repository layout
 
 ```
+assets/              static copy of figures/repeatability.png, committed only
+                     so it renders on GitHub -- regenerate with `make figures`
+                     and `cp figures/repeatability.png assets/`, never hand-edit
 src/repgain/        installable package: the estimator, the bootstrap, the adapter
 experiments/        Stage 1 (needs raw MotionSense data): feature extraction,
                      backbone + per-user adapter fitting -> small cached CSVs in results/
