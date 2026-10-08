@@ -16,23 +16,17 @@ jobs:
         with:
           enable-cache: true
 
-      - name: Install dependencies
-        run: uv pip install --system -e ".[dev]"
+      - name: uv sync
+        run: uv venv .venv && uv pip install -e ".[dev]"
 
       - name: Lint
-        run: ruff check src analysis paper experiments tests
+        run: uv run --active ruff check src analysis paper experiments tests
 
       - name: Unit tests + claim regeneration (tests/test_claims.py)
-        run: PYTHONPATH=src pytest -q
+        run: make test
 
       - name: make figures (Stage 2 smoke test, no dataset needed)
-        run: |
-          PYTHONPATH=src python analysis/covariance_check.py
-          PYTHONPATH=src python analysis/repeatability_stratified.py
-          PYTHONPATH=src python analysis/design_participant_bootstrap.py
-          PYTHONPATH=src python analysis/figure1b.py
-          PYTHONPATH=src python analysis/make_macros.py
-          PYTHONPATH=src python paper/make_figures.py
+        run: make figures
 
       - name: Upload regenerated figure
         uses: actions/upload-artifact@v4
