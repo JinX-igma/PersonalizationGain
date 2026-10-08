@@ -12,14 +12,15 @@ individually unrepeatable: score the same fixed adapter on a second episode
 of the same user and activity, and a meaningful fraction of per-user
 conclusions flip.
 
-![Episode variation vs. gain magnitude, and per-user gains against episode-repeatability reference scales](assets/repeatability.png)
+![Left: 24 participants' personalization gains sorted against the cohort mean, most inside the measurement's own noise band. Right: the same gain measured on two separate episodes of the same user and activity, scattered against the diagonal, colored by activity.](assets/overview.png)
 
-*(a) The spread between two measurements of the same (user, activity) gain
-(orange, top row) is comparable in size to the gain itself (orange, bottom
-row) -- a cohort-level effect does not imply a stable per-user number. (b)
-Most per-user gains (blue) fall inside the measurement's own noise band
-(dashed/dotted reference scales), even though the cohort mean is positive.
-Regenerate with `make figures`.*
+*(a) The cohort mean (dashed line) is positive, but score the measurement's
+own noise band (shaded, derived from panel b) against each participant and
+22 of 24 are not individually distinguishable from zero -- a real group
+effect does not imply a stable per-user number. (b) The same (user,
+activity) gain, measured by the same fixed adapter on two different held-out
+episodes: a perfectly repeatable measurement would sit on the diagonal;
+51/66 cells even keep the same sign. Regenerate with `make figures`.*
 
 `repgain` is the diagnostic that catches this, packaged so any
 personalization study can run it on its own results:
@@ -50,9 +51,10 @@ difference is the *episode repeatability* reported in the paper:
 ## Repository layout
 
 ```
-assets/              static copy of figures/repeatability.png, committed only
-                     so it renders on GitHub -- regenerate with `make figures`
-                     and `cp figures/repeatability.png assets/`, never hand-edit
+assets/              static copies of figures/*.png, committed only so they
+                     render on GitHub -- regenerate with `make figures` and
+                     `cp figures/{overview,repeatability}.png assets/`,
+                     never hand-edit
 src/repgain/        installable package: the estimator, the bootstrap, the adapter
 experiments/        Stage 1 (needs raw MotionSense data): feature extraction,
                      backbone + per-user adapter fitting -> small cached CSVs in results/
@@ -83,6 +85,14 @@ make full      # Stage 1: clone MotionSense, extract features, fit the
 `make test` also runs `tests/test_claims.py`, which recomputes every macro in
 `paper/claims.yaml` from the committed cache and checks it against the value
 actually printed in the paper.
+
+`make figures` also regenerates the paper's actual Figure 1, bit-for-bit:
+
+<img src="assets/repeatability.png" alt="Figure 1 from the paper: episode variation vs. gain magnitude, and per-user gains against episode-repeatability reference scales" width="520">
+
+*(a) |episode gain difference| vs. |activity-level gain|, over the 72 (user,
+activity) cells with a repeated episode. (b) Per-user gains against the two
+reference half-widths derived from panel (a)'s three-activity aggregate.*
 
 ## Data
 

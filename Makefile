@@ -18,6 +18,7 @@ figures:
 	PYTHONPATH=src uv run --active python analysis/figure1b.py
 	PYTHONPATH=src uv run --active python analysis/make_macros.py
 	PYTHONPATH=src uv run --active python paper/make_figures.py
+	PYTHONPATH=src uv run --active python paper/make_readme_overview.py
 
 # Stage 1: needs raw MotionSense data and network access. See experiments/README.md.
 full:
